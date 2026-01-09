@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weatherappg14/services/api_service.dart';
 import 'package:weatherappg14/widget/search_city_widget.dart';
 import 'package:weatherappg14/widget/weather_item.dart';
 
@@ -8,6 +9,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ApiService().getWeatherInfo();
+        },
+      ),
       backgroundColor: Color(0xff2C2F31),
       appBar: AppBar(
         title: Text("Weather App", style: TextStyle(color: Colors.white)),
