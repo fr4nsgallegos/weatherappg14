@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:weatherappg14/models/weather_model.dart';
 import 'package:weatherappg14/services/api_service.dart';
 import 'package:weatherappg14/widget/search_city_widget.dart';
@@ -11,8 +12,43 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController _searchController = TextEditingController();
-
   WeatherModel? _weatherModel;
+
+  Future<Position?> getPosition() async {
+    bool serviceEnabled;
+    LocationPermission locationPermission;
+
+    // Verificamos que el servicio este habilitado
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
+    if (!serviceEnabled) {
+      print("Los servicios de ubicación estan deshabilitados");
+      return null;
+    }
+
+    // Verificamos los permisos
+    locationPermission = await Geolocator.checkPermission();
+    if (locationPermission == LocationPermission.denied) {
+      locationPermission = await Geolocator.requestPermission();
+      if (locationPermission == LocationPermission.denied) {
+        print("Permiso de ubicación denegado");
+        return null;
+      }
+    }
+    if (locationPermission == LocationPermission.deniedForever) {
+      print("Los permisos de ubicación estan permanentemente denegados");
+      return null;
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      print(position);
+      return position;
+    } catch (e) {
+      print("Error al obtener ubicación: $e");
+      return null;
+    }
+  }
 
   Future<void> getWeather() async {
     _weatherModel = await ApiService().getWeatherInfoByName();
@@ -23,6 +59,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getWeather();
+    getPosition();
   }
 
   @override
