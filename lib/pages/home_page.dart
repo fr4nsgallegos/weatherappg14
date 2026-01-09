@@ -11,7 +11,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ApiService().getWeatherInfo();
+          ApiService().getWeatherInfoByName();
         },
       ),
       backgroundColor: Color(0xff2C2F31),
