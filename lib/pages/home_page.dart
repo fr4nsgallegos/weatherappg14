@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:weatherappg14/models/weather_model.dart';
 import 'package:weatherappg14/services/api_service.dart';
 import 'package:weatherappg14/widget/search_city_widget.dart';
 import 'package:weatherappg14/widget/weather_item.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   TextEditingController _searchController = TextEditingController();
+
+  WeatherModel? _weatherModel;
+
+  Future<void> getWeather() async {
+    _weatherModel = await ApiService().getWeatherInfoByName();
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getWeather();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,46 +45,63 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          SearchCityWidget(controller: _searchController, function: () {}),
-          Container(
-            margin: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-            padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(25),
-              gradient: LinearGradient(
-                colors: [Color(0xff6B9AF8), Color(0xff2E5FEC)],
-                begin: Alignment.bottomRight,
-                end: Alignment.topLeft,
-              ),
-            ),
-            child: Column(
+      body: _weatherModel == null
+          ? Center(child: CircularProgressIndicator())
+          : Column(
               children: [
-                Text(
-                  "lima, Perú",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                SearchCityWidget(
+                  controller: _searchController,
+                  function: () {},
                 ),
-                SizedBox(height: 32),
-                Image.asset("assets/icons/heavycloudy.png", height: 100),
-                Text(
-                  "23.9 °",
-                  style: TextStyle(fontSize: 100, color: Colors.white),
-                ),
-                Divider(),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    WeatherItem(value: 18, unit: "km/h", image: "windspeed"),
-                    WeatherItem(value: 76, unit: "%", image: "humidity"),
-                    WeatherItem(value: 58, unit: "%", image: "cloud"),
-                  ],
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    gradient: LinearGradient(
+                      colors: [Color(0xff6B9AF8), Color(0xff2E5FEC)],
+                      begin: Alignment.bottomRight,
+                      end: Alignment.topLeft,
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "${_weatherModel!.location.name}, ${_weatherModel!.location.country}",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                      SizedBox(height: 32),
+                      Image.asset("assets/icons/heavycloudy.png", height: 100),
+                      Text(
+                        "${_weatherModel!.current.tempC} °",
+                        style: TextStyle(fontSize: 100, color: Colors.white),
+                      ),
+                      Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          WeatherItem(
+                            value: _weatherModel!.current.visKm,
+                            unit: "km/h",
+                            image: "windspeed",
+                          ),
+                          WeatherItem(
+                            value: _weatherModel!.current.humidity.toDouble(),
+                            unit: "%",
+                            image: "humidity",
+                          ),
+                          WeatherItem(
+                            value: _weatherModel!.current.cloud.toDouble(),
+                            unit: "%",
+                            image: "cloud",
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
