@@ -53,6 +53,25 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getWeatherByCity() async {
+    final city = _searchController.text.trim();
+    _searchController.clear();
+    if (city.isEmpty) {
+      print("Debe ingresar una ciudad");
+      return;
+    }
+    try {
+      ForecastModel? result = await ApiService().getForecastInfoByCity(city);
+      if (result != null) {
+        setState(() {
+          _forecastModel = result;
+        });
+      }
+    } catch (e) {
+      print("Error al buscar la ciudad ${e}");
+    }
+  }
+
   Future<void> getWeatherFromPosition() async {
     Position? _pos = await getPosition();
     if (_pos == null) {
@@ -87,11 +106,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ApiService().getWeatherInfoByName();
-        },
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     ApiService().getWeatherInfoByName();
+      //   },
+      // ),
       backgroundColor: Color(0xff2C2F31),
       appBar: AppBar(
         title: Text("Weather App", style: TextStyle(color: Colors.white)),
@@ -99,102 +118,113 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0xff2C2F31),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              getWeatherFromPosition();
+            },
             icon: Icon(Icons.location_on_outlined, color: Colors.white),
           ),
         ],
       ),
       body: _forecastModel == null
           ? Center(child: CircularProgressIndicator())
-          : ListView(
-              children: [
-                SearchCityWidget(
-                  controller: _searchController,
-                  function: () {},
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
-                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(25),
-                    gradient: LinearGradient(
-                      colors: [Color(0xff6B9AF8), Color(0xff2E5FEC)],
-                      begin: Alignment.bottomRight,
-                      end: Alignment.topLeft,
-                    ),
+          : Expanded(
+              child: ListView(
+                children: [
+                  SearchCityWidget(
+                    controller: _searchController,
+                    function: () {
+                      getWeatherByCity();
+                    },
                   ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "${_forecastModel!.location.name}, ${_forecastModel!.location.country}",
-                        style: TextStyle(color: Colors.white, fontSize: 18),
-                      ),
-                      SizedBox(height: 32),
-                      Image.asset("assets/icons/heavycloudy.png", height: 100),
-                      Text(
-                        "${_forecastModel!.current.tempC} °",
-                        style: TextStyle(fontSize: 100, color: Colors.white),
-                      ),
-                      Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          WeatherItem(
-                            value: _forecastModel!.current.visKm,
-                            unit: "km/h",
-                            image: "windspeed",
-                          ),
-                          WeatherItem(
-                            value: _forecastModel!.current.humidity.toDouble(),
-                            unit: "%",
-                            image: "humidity",
-                          ),
-                          WeatherItem(
-                            value: _forecastModel!.current.cloud.toDouble(),
-                            unit: "%",
-                            image: "cloud",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    "Forecast",
-                    style: TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                ),
-                SizedBox(height: 16),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(
-                      _forecastModel!.forecast.forecastday[0].hour.length,
-                      (index) => ForecastWidget(
-                        hour: _forecastModel!
-                            .forecast
-                            .forecastday[0]
-                            .hour[index]
-                            .time
-                            .toString()
-                            .substring(11, 16),
-                        temp: _forecastModel!
-                            .forecast
-                            .forecastday[0]
-                            .hour[index]
-                            .tempC
-                            .toString(),
-                        isDay: _forecastModel!
-                            .forecast
-                            .forecastday[0]
-                            .hour[index]
-                            .isDay,
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 24, horizontal: 20),
+                    padding: EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(25),
+                      gradient: LinearGradient(
+                        colors: [Color(0xff6B9AF8), Color(0xff2E5FEC)],
+                        begin: Alignment.bottomRight,
+                        end: Alignment.topLeft,
                       ),
                     ),
+                    child: Column(
+                      children: [
+                        Text(
+                          "${_forecastModel!.location.name}, ${_forecastModel!.location.country}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        SizedBox(height: 32),
+                        Image.asset(
+                          "assets/icons/heavycloudy.png",
+                          height: 100,
+                        ),
+                        Text(
+                          "${_forecastModel!.current.tempC} °",
+                          style: TextStyle(fontSize: 100, color: Colors.white),
+                        ),
+                        Divider(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            WeatherItem(
+                              value: _forecastModel!.current.visKm,
+                              unit: "km/h",
+                              image: "windspeed",
+                            ),
+                            WeatherItem(
+                              value: _forecastModel!.current.humidity
+                                  .toDouble(),
+                              unit: "%",
+                              image: "humidity",
+                            ),
+                            WeatherItem(
+                              value: _forecastModel!.current.cloud.toDouble(),
+                              unit: "%",
+                              image: "cloud",
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Center(
+                    child: Text(
+                      "Forecast",
+                      style: TextStyle(color: Colors.white, fontSize: 24),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        _forecastModel!.forecast.forecastday[0].hour.length,
+                        (index) => ForecastWidget(
+                          hour: _forecastModel!
+                              .forecast
+                              .forecastday[0]
+                              .hour[index]
+                              .time
+                              .toString()
+                              .substring(11, 16),
+                          temp: _forecastModel!
+                              .forecast
+                              .forecastday[0]
+                              .hour[index]
+                              .tempC
+                              .toString(),
+                          isDay: _forecastModel!
+                              .forecast
+                              .forecastday[0]
+                              .hour[index]
+                              .isDay,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
