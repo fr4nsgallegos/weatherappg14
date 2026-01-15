@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:weatherappg14/models/forecast_model.dart';
 import 'package:weatherappg14/models/weather_model.dart';
 import 'package:weatherappg14/services/api_service.dart';
 import 'package:weatherappg14/widget/forecast_widget.dart';
@@ -13,7 +14,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TextEditingController _searchController = TextEditingController();
-  WeatherModel? _weatherModel;
+  // WeatherModel? _weatherModel;
+  ForecastModel? _forecastModel;
 
   Future<Position?> getPosition() async {
     bool serviceEnabled;
@@ -57,17 +59,22 @@ class _HomePageState extends State<HomePage> {
       print("No se pudo obtner la ubicación");
       return null;
     }
-    _weatherModel = await ApiService().getWeatherInfoByPos(
+    // _weatherModel = await ApiService().getWeatherInfoByPos(
+    //   _pos.latitude,
+    //   _pos.longitude,
+    // );
+
+    _forecastModel = await ApiService().getForecastInfoByPos(
       _pos.latitude,
       _pos.longitude,
     );
     setState(() {});
   }
 
-  Future<void> getWeather() async {
-    _weatherModel = await ApiService().getWeatherInfoByName();
-    setState(() {});
-  }
+  // Future<void> getWeather() async {
+  //   _weatherModel = await ApiService().getWeatherInfoByName();
+  //   setState(() {});
+  // }
 
   @override
   void initState() {
@@ -97,7 +104,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: _weatherModel == null
+      body: _forecastModel == null
           ? Center(child: CircularProgressIndicator())
           : ListView(
               children: [
@@ -119,13 +126,13 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       Text(
-                        "${_weatherModel!.location.name}, ${_weatherModel!.location.country}",
+                        "${_forecastModel!.location.name}, ${_forecastModel!.location.country}",
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                       SizedBox(height: 32),
                       Image.asset("assets/icons/heavycloudy.png", height: 100),
                       Text(
-                        "${_weatherModel!.current.tempC} °",
+                        "${_forecastModel!.current.tempC} °",
                         style: TextStyle(fontSize: 100, color: Colors.white),
                       ),
                       Divider(),
@@ -133,17 +140,17 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           WeatherItem(
-                            value: _weatherModel!.current.visKm,
+                            value: _forecastModel!.current.visKm,
                             unit: "km/h",
                             image: "windspeed",
                           ),
                           WeatherItem(
-                            value: _weatherModel!.current.humidity.toDouble(),
+                            value: _forecastModel!.current.humidity.toDouble(),
                             unit: "%",
                             image: "humidity",
                           ),
                           WeatherItem(
-                            value: _weatherModel!.current.cloud.toDouble(),
+                            value: _forecastModel!.current.cloud.toDouble(),
                             unit: "%",
                             image: "cloud",
                           ),
