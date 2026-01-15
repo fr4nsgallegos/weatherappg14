@@ -33,4 +33,21 @@ class UserApiService {
       throw Exception();
     }
   }
+
+  // PUT
+  Future<UserModel?> updateUser(UserModel user) async {
+    final response = await http.put(
+      Uri.parse("$baseUrl/users/${user.id}"),
+      body: jsonEncode(user.toJson()),
+      headers: {"Content-Type": "application/json"},
+    );
+
+    try {
+      if (response.statusCode == 200) {
+        return UserModel.fromJson(jsonDecode(response.body));
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 }

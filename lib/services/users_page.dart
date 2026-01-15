@@ -53,6 +53,29 @@ class _UsersPageState extends State<UsersPage> {
                   width: 50,
                   height: 50,
                 ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () async {
+                        UserModel userUpdated = UserModel(
+                          createdAt: userList[index].createdAt,
+                          name: "Nombre actualizado",
+                          avatar: userList[index].avatar,
+                          id: userList[index].id,
+                        );
+                        await userApiService.updateUser(userUpdated);
+                        getUsers();
+                        setState(() {});
+                      },
+                      icon: Icon(Icons.edit, color: Colors.blueAccent),
+                    ),
+                    IconButton(
+                      onPressed: () {},
+                      icon: Icon(Icons.delete, color: Colors.redAccent),
+                    ),
+                  ],
+                ),
               ),
             );
           },
