@@ -50,6 +50,19 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> getWeatherFromPosition() async {
+    Position? _pos = await getPosition();
+    if (_pos == null) {
+      print("No se pudo obtner la ubicación");
+      return null;
+    }
+    _weatherModel = await ApiService().getWeatherInfoByPos(
+      _pos.latitude,
+      _pos.longitude,
+    );
+    setState(() {});
+  }
+
   Future<void> getWeather() async {
     _weatherModel = await ApiService().getWeatherInfoByName();
     setState(() {});
@@ -58,8 +71,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    getWeather();
-    getPosition();
+    getWeatherFromPosition();
+    // getWeather();
+    // getPosition();
   }
 
   @override
