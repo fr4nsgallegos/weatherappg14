@@ -65,7 +65,7 @@ class Current {
   double gustKph;
   int? timeEpoch;
   String? time;
-  int? snowCm;
+  double? snowCm;
   int? willItRain;
   int? chanceOfRain;
   int? willItSnow;
@@ -315,7 +315,7 @@ class Day {
   int dailyWillItSnow;
   int dailyChanceOfSnow;
   Condition condition;
-  int uv;
+  double uv;
 
   Day({
     required this.maxtempC,
