@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weatherappg14/models/user_model.dart';
+import 'package:weatherappg14/services/dio_client.dart';
+import 'package:weatherappg14/services/user_api_retrofit.dart';
 import 'package:weatherappg14/services/user_api_service.dart';
 
 class UsersPage extends StatefulWidget {
@@ -29,13 +31,19 @@ class _UsersPageState extends State<UsersPage> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          UserModel _exampleUser = UserModel(
-            createdAt: DateTime.now(),
-            name: "Elias Sanchez",
-            avatar:
-                "https://images.unsplash.com/photo-1754473260215-51f8183c137d?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-          );
-          userApiService.createUser(_exampleUser);
+          final userApiRetrofit = UserApiRetrofit(DioClient.getDio());
+          userApiRetrofit.getUsers().then((value) {
+            value.forEach((e) {
+              print(e.name);
+            });
+          });
+          // UserModel _exampleUser = UserModel(
+          //   createdAt: DateTime.now(),
+          //   name: "Elias Sanchez",
+          //   avatar:
+          //       "https://images.unsplash.com/photo-1754473260215-51f8183c137d?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          // );
+          // userApiService.createUser(_exampleUser);
         },
       ),
       body: Padding(
