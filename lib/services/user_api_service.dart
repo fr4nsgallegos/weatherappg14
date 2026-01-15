@@ -50,4 +50,12 @@ class UserApiService {
       print("Error: $e");
     }
   }
+
+  // DELETE
+  Future<void> deteleUser(String id) async {
+    final response = await http.delete(Uri.parse("$baseUrl/users/$id"));
+    if (response.statusCode != 200) {
+      throw Exception("ERROR AL ELIMINAR");
+    }
+  }
 }
