@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weatherappg14/models/weather_model.dart';
 import 'package:weatherappg14/services/api_service.dart';
+import 'package:weatherappg14/widget/forecast_widget.dart';
 import 'package:weatherappg14/widget/search_city_widget.dart';
 import 'package:weatherappg14/widget/weather_item.dart';
 
@@ -98,7 +99,7 @@ class _HomePageState extends State<HomePage> {
       ),
       body: _weatherModel == null
           ? Center(child: CircularProgressIndicator())
-          : Column(
+          : ListView(
               children: [
                 SearchCityWidget(
                   controller: _searchController,
@@ -148,6 +149,27 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ],
                       ),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    "Forecast",
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                ),
+                SizedBox(height: 16),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ForecastWidget(),
+                      ForecastWidget(),
+                      ForecastWidget(),
+                      ForecastWidget(),
+                      ForecastWidget(),
+                      ForecastWidget(),
+                      ForecastWidget(),
                     ],
                   ),
                 ),
