@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weatherappg14/models/user_model.dart';
+import 'package:weatherappg14/models/user_response.dart';
 import 'package:weatherappg14/services/dio_client.dart';
 import 'package:weatherappg14/services/user_api_retrofit.dart';
 import 'package:weatherappg14/services/user_api_service.dart';
@@ -30,12 +31,44 @@ class _UsersPageState extends State<UsersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           final userApiRetrofit = UserApiRetrofit(DioClient.getDio());
-          userApiRetrofit.getUsers().then((value) {
+
+          await userApiRetrofit.createUser(
+            UserResponse(
+              createdAt: DateTime.now(),
+              name: "Galloegsd",
+              avatar:
+                  "https://images.unsplash.com/photo-1754473260215-51f8183c137d?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            ),
+          );
+
+          await userApiRetrofit.getUsers().then((value) {
             value.forEach((e) {
               print(e.name);
             });
+          });
+
+          await userApiRetrofit.updateUser(
+            "16",
+            UserResponse(
+              createdAt: DateTime.now(),
+              name: "Mengoaaaaaaaaaaaaa",
+              avatar:
+                  "https://images.unsplash.com/photo-1754473260215-51f8183c137d?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            ),
+          );
+          // await userApiRetrofit.deleteUser("21");
+          // await userApiRetrofit.deleteUser("22");
+          await userApiRetrofit.getUsers().then((value) {
+            value.forEach((e) {
+              print(e.name);
+            });
+          });
+          print("------------------------------------");
+
+          await userApiRetrofit.getUserById("2").then((value) {
+            print(value.name);
           });
           // UserModel _exampleUser = UserModel(
           //   createdAt: DateTime.now(),

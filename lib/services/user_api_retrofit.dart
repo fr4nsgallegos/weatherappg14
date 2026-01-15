@@ -11,4 +11,22 @@ abstract class UserApiRetrofit {
   // GET
   @GET("/users")
   Future<List<UserResponse>> getUsers();
+
+  @GET("/users/{id}")
+  Future<UserResponse> getUserById(@Path("id") String id);
+
+  // POST
+  @POST("/users")
+  Future<UserResponse> createUser(@Body() UserResponse user);
+
+  // PUT
+  @PUT("users/{id}")
+  Future<UserResponse> updateUser(
+    @Path("id") String id,
+    @Body() UserResponse user,
+  );
+
+  // DELETE
+  @DELETE("users/{id}")
+  Future<void> deleteUser(@Path("id") String id);
 }
